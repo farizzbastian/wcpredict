@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daftar Pertandingan — WC2026 Predict</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-page="matches">
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="brand-icon">⚽</div>
+    <span>WC2026 <span style="color:var(--accent-blue)">Predict</span></span>
+  </div>
+  <div class="navbar-nav">
+    <a href="../index.html" class="nav-link">Dashboard</a>
+    <a href="matches.html" class="nav-link active">Pertandingan</a>
+    <a href="detail.html" class="nav-link">Analisis</a>
+    <a href="comparison.html" class="nav-link">Perbandingan</a>
+    <span class="badge badge-live" style="margin-left:8px">● Live</span>
+  </div>
+</nav>
+
+<div class="container" style="padding-top:40px;padding-bottom:48px">
+  <div style="margin-bottom:28px">
+    <h1 style="font-size:1.6rem;font-weight:800;margin-bottom:6px">Daftar Pertandingan</h1>
+    <p style="color:var(--text-secondary);font-size:0.9rem">FIFA World Cup 2026 — Semua pertandingan dengan prediksi berbasis data</p>
+  </div>
+
+  <!-- Filters -->
+  <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:24px">
+    <div>
+      <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Status</div>
+      <div class="filter-row" style="margin-bottom:0">
+        <button class="filter-btn active" data-filter="all">Semua</button>
+        <button class="filter-btn" data-filter="live">● Live</button>
+        <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+        <button class="filter-btn" data-filter="finished">Finished</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Fase</div>
+      <div class="filter-row" style="margin-bottom:0">
+        <button class="filter-btn active">Group Stage</button>
+        <button class="filter-btn">Round of 32</button>
+        <button class="filter-btn">Round of 16</button>
+        <button class="filter-btn">Quarter Final</button>
+        <button class="filter-btn">Semi Final</button>
+        <button class="filter-btn">Final</button>
+      </div>
+    </div>
+    <div style="margin-left:auto">
+      <div class="search-wrap" style="max-width:260px">
+        <input type="text" id="search-input" class="search-input" placeholder="Cari tim..." />
+        <span class="search-icon">🔍</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="matches-grid" class="matches-grid"></div>
+</div>
+
+<footer class="footer">
+  <div class="disclaimer">⚠️ Prediksi adalah estimasi berbasis data, bukan jaminan hasil.</div>
+  <div>WC2026 Prediction Engine</div>
+</footer>
+
+<script src="../js/api.js?v=20260628-data"></script>
+<script src="../js/app.js?v=20260628-data"></script>

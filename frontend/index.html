@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WC 2026 Prediction Engine — Prediksi Pertandingan Piala Dunia</title>
+  <meta name="description" content="Platform prediksi pertandingan Piala Dunia 2026 berbasis data — 6 Faktor Klement, rating pemain, kondisi skuad, dan situasi grup." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="home">
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="brand-icon">⚽</div>
+    <span>WC2026 <span style="color:var(--accent-blue)">Predict</span></span>
+  </div>
+  <div class="navbar-nav">
+    <a href="index.html" class="nav-link active">Dashboard</a>
+    <a href="pages/matches.html" class="nav-link">Pertandingan</a>
+    <a href="pages/detail.html" class="nav-link">Analisis</a>
+    <a href="pages/comparison.html" class="nav-link">Perbandingan</a>
+    <span class="badge badge-live" style="margin-left:8px">● Live</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">⚡ FIFA World Cup 2026</div>
+  <h1>Match Prediction <span>Intelligence</span></h1>
+  <p>Prediksi pertandingan berbasis data — 6 Faktor Klement, rating pemain, kondisi skuad, dan situasi grup. Transparan. Akurat. Berbasis fakta.</p>
+  <div class="search-wrap">
+    <input type="text" id="search-input" class="search-input" placeholder="Cari tim atau pertandingan..." />
+    <span class="search-icon">🔍</span>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="value">64</div><div class="label">Total Matches</div></div>
+    <div class="hero-stat"><div class="value">32</div><div class="label">Teams</div></div>
+    <div class="hero-stat"><div class="value">6</div><div class="label">Faktor Klement</div></div>
+    <div class="hero-stat"><div class="value">15</div><div class="label">Max Score</div></div>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<main class="container" style="padding-top:40px;padding-bottom:48px">
+
+  <!-- LIVE SECTION -->
+  <div style="margin-bottom:40px">
+    <div class="section-header">
+      <h2 class="section-title"><span class="dot" style="background:var(--accent-red)"></span>Pertandingan Live</h2>
+      <a href="pages/matches.html?filter=live" class="section-link">Lihat semua →</a>
+    </div>
+    <div id="live-grid" class="matches-grid"></div>
+  </div>
+
+  <!-- UPCOMING SECTION -->
+  <div style="margin-bottom:40px">
+    <div class="section-header">
+      <h2 class="section-title"><span class="dot"></span>Pertandingan Berikutnya</h2>
+      <a href="pages/matches.html?filter=upcoming" class="section-link">Lihat semua →</a>
+    </div>
+    <div id="upcoming-grid" class="matches-grid"></div>
+  </div>
+
+  <!-- ALL MATCHES -->
+  <div>
+    <div class="section-header">
+      <h2 class="section-title"><span class="dot" style="background:var(--accent-green)"></span>Semua Pertandingan</h2>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="all">🌐 Semua</button>
+      <button class="filter-btn" data-filter="live">● Live</button>
+      <button class="filter-btn" data-filter="upcoming">🕐 Upcoming</button>
+      <button class="filter-btn" data-filter="finished">✅ Finished</button>
+    </div>
+    <div id="matches-grid" class="matches-grid"></div>
+  </div>
+
+</main>
+
+<!-- HOW IT WORKS STRIP -->
+<section style="background:var(--bg-secondary);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px 24px">
+  <div class="container">
+    <h3 class="text-center" style="font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:28px">Bagaimana Sistem Bekerja</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px">
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:2rem;margin-bottom:8px">📊</div>
+        <div style="font-weight:700;margin-bottom:4px">6 Faktor Klement</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary)">GDP, Populasi, Suhu, FIFA Rank, Home Advantage, WC Form</div>
+      </div>
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:2rem;margin-bottom:8px">⭐</div>
+        <div style="font-weight:700;margin-bottom:4px">Rating Pemain</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary)">Starting XI, pemain kunci, rating per lini, koreksi cedera</div>
+      </div>
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:2rem;margin-bottom:8px">🏥</div>
+        <div style="font-weight:700;margin-bottom:4px">Kondisi Skuad</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary)">Cedera, suspensi, risiko rotasi, lineup adjustment</div>
+      </div>
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:2rem;margin-bottom:8px">🗂️</div>
+        <div style="font-weight:700;margin-bottom:4px">Situasi Grup</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary)">Motivasi tim, wajib menang, sudah lolos, sudah gugur</div>
+      </div>
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:2rem;margin-bottom:8px">🎯</div>
+        <div style="font-weight:700;margin-bottom:4px">Prediksi Final</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary)">Pemenang, prediksi skor, tingkat keyakinan, alasan data</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="disclaimer">⚠️ Prediksi ini adalah estimasi berbasis data, bukan jaminan hasil pertandingan. Gunakan sebagai referensi analisis, bukan satu-satunya dasar keputusan.</div>
+  <div>WC2026 Prediction Engine · Data diperbarui otomatis · <a href="#">Sumber Data</a> · <a href="#">Metodologi</a></div>
+</footer>
+
+<script src="js/api.js?v=20260628-data"></script>
+<script src="js/app.js?v=20260628-data"></script>
+</body>
+</html>

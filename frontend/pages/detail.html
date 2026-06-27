@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analisis Prediksi — WC2026 Predict</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-page="detail">
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="brand-icon">⚽</div>
+    <span>WC2026 <span style="color:var(--accent-blue)">Predict</span></span>
+  </div>
+  <div class="navbar-nav">
+    <a href="../index.html" class="nav-link">Dashboard</a>
+    <a href="matches.html" class="nav-link">Pertandingan</a>
+    <a href="detail.html" class="nav-link active">Analisis</a>
+    <a href="comparison.html" class="nav-link">Perbandingan</a>
+    <span class="badge badge-live" style="margin-left:8px">● Live</span>
+  </div>
+</nav>
+
+<!-- Breadcrumb -->
+<div style="background:var(--bg-secondary);border-bottom:1px solid var(--border);padding:10px 24px">
+  <div class="container" style="padding:0">
+    <div style="font-size:0.78rem;color:var(--text-muted)">
+      <a href="../index.html" style="color:var(--text-muted)">Dashboard</a>
+      <span style="margin:0 6px">›</span>
+      <a href="matches.html" style="color:var(--text-muted)">Pertandingan</a>
+      <span style="margin:0 6px">›</span>
+      <span id="breadcrumb-match" style="color:var(--text-primary)">Memuat pertandingan...</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="detail-layout">
+
+  <!-- STEPPER SIDEBAR -->
+  <aside class="stepper-sidebar">
+    <div class="stepper-title">Alur Analisis</div>
+    <ul class="stepper-list">
+      <li class="stepper-item done active" data-section="match-header" onclick="scrollToSection('match-header')">
+        <div class="stepper-icon">✓</div>
+        <span>Match Data</span>
+      </li>
+      <li class="stepper-item done" data-section="klement-panel" onclick="scrollToSection('klement-panel')">
+        <div class="stepper-icon">✓</div>
+        <span>6 Faktor Klement</span>
+      </li>
+      <li class="stepper-item done" data-section="stats-panel" onclick="scrollToSection('stats-panel')">
+        <div class="stepper-icon">✓</div>
+        <span>Statistik Turnamen</span>
+      </li>
+      <li class="stepper-item done" data-section="rating-panel" onclick="scrollToSection('rating-panel')">
+        <div class="stepper-icon">✓</div>
+        <span>Rating Pemain</span>
+      </li>
+      <li class="stepper-item warning" data-section="squad-panel" onclick="scrollToSection('squad-panel')">
+        <div class="stepper-icon">!</div>
+        <span>Kondisi Skuad</span>
+      </li>
+      <li class="stepper-item done" data-section="group-panel" onclick="scrollToSection('group-panel')">
+        <div class="stepper-icon">✓</div>
+        <span>Situasi Grup</span>
+      </li>
+      <li class="stepper-item done" data-section="breakdown-panel" onclick="scrollToSection('breakdown-panel')">
+        <div class="stepper-icon">✓</div>
+        <span>Score Breakdown</span>
+      </li>
+      <li class="stepper-item done" data-section="prediction-panel-wrap" onclick="scrollToSection('prediction-panel-wrap')">
+        <div class="stepper-icon">⚡</div>
+        <span>Final Prediction</span>
+      </li>
+    </ul>
+    <div class="divider"></div>
+    <div style="font-size:0.72rem;color:var(--text-muted)">
+      <div class="update-row"><span class="update-dot"></span>Data diperbarui otomatis</div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="data-status-row">
+        <span class="data-pill"><span class="dot dot-available"></span>7 Available</span>
+        <span class="data-pill"><span class="dot dot-partial"></span>2 Partial</span>
+        <span class="data-pill"><span class="dot dot-missing"></span>1 Missing</span>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <a id="comparison-link" href="comparison.html" class="btn btn-secondary btn-sm btn-full">Lihat Perbandingan Tim</a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="detail-content">
+
+    <!-- 1. MATCH HEADER -->
+    <section id="match-header"></section>
+
+    <!-- 2. 6 FAKTOR KLEMENT -->
+    <section id="klement-panel" class="panel fade-up delay-1">
+      <div class="panel-header">
+        <div class="panel-title"><span class="panel-icon">📊</span>6 Faktor Klement</div>
+        <span class="badge badge-available">Data Available</span>
+      </div>
+      <div class="panel-body">
+        <div id="klement-section"></div>
+      </div>
+    </section>
+
+    <!-- 3. STATISTIK TURNAMEN -->
+    <section id="stats-panel" class="panel fade-up delay-1">
+      <div class="panel-header">
+        <div class="panel-title"><span class="panel-icon">📈</span>Statistik Piala Dunia 2026</div>
+        <span class="badge badge-available">Data Available</span>
+      </div>
+      <div class="panel-body">
+        <!-- Header tim -->
+        <div class="metric-head-grid" style="display:grid;grid-template-columns:1fr 140px 1fr;gap:8px;margin-bottom:12px;text-align:center">
+          <div id="stats-team-a-label" style="font-weight:700;color:var(--team-a);text-align:right">Tim A</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;padding-top:2px">Metric</div>
+          <div id="stats-team-b-label" style="font-weight:700;color:var(--team-b)">Tim B</div>
+        </div>
+        <div id="stats-section"></div>
+      </div>
+    </section>
+
+    <!-- 4. RATING PEMAIN -->
+    <section id="rating-panel" class="panel fade-up delay-2">
+      <div class="panel-header">
+        <div class="panel-title"><span class="panel-icon">⭐</span>Rating Pemain</div>
+        <span class="badge badge-partial">Partial — Avg. 3 Matches</span>
+      </div>
+      <div class="panel-body">
+        <div id="rating-section"></div>
+      </div>
+    </section>
+
+    <!-- 5. KONDISI SKUAD -->
+    <section id="squad-panel" class="panel fade-up delay-2">
+      <div class="panel-header">
+        <div class="panel-title"><span class="panel-icon">🏥</span>Kondisi Skuad</div>
+        <span class="badge badge-medium">⚠ Issues Detected</span>
+      </div>
+      <div class="panel-body">
+        <div id="squad-warning" class="data-warning" style="margin-bottom:16px;display:none"></div>
+        <div id="squad-section"></div>
+      </div>
+    </section>
+
+    <!-- 6. SITUASI GRUP -->
+    <section id="group-panel" class="panel fade-up delay-3">
+      <div class="panel-header">
+        <div id="group-panel-title" class="panel-title"><span class="panel-icon">🗂️</span>Situasi Grup</div>
+        <span class="badge badge-available">Data Available</span>
+      </div>
+      <div class="panel-body">
+        <div id="group-section"></div>
+      </div>
+    </section>
+
+    <!-- 7. SCORE BREAKDOWN -->
+    <section id="breakdown-panel" class="panel fade-up delay-3">
+      <div class="panel-header">
+        <div class="panel-title"><span class="panel-icon">🧮</span>Score Breakdown — Total Prediksi</div>
+        <span style="font-size:0.75rem;color:var(--text-muted)">Max 15 poin</span>
+      </div>
+      <div class="panel-body">
+        <div class="metric-head-grid metric-head-grid-wide" style="display:grid;grid-template-columns:1fr 160px 1fr;gap:8px;margin-bottom:16px;text-align:center">
+          <div id="breakdown-team-a-label" style="font-weight:700;color:var(--team-a);text-align:right">Tim A</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;padding-top:2px">Komponen</div>
+          <div id="breakdown-team-b-label" style="font-weight:700;color:var(--team-b)">Tim B</div>
+        </div>
+        <div id="score-breakdown"></div>
+      </div>
+    </section>
+
+    <!-- 8. FINAL PREDICTION -->
+    <section id="prediction-panel-wrap">
+      <div id="prediction-section"></div>
+    </section>
+
+    <!-- Update Info -->
+    <div style="text-align:center;padding:16px 0">
+      <div class="update-row" style="justify-content:center">
+        <span class="update-dot"></span>
+        <span id="last-update-text" style="font-size:0.75rem;color:var(--text-muted)">Memuat waktu pembaruan...</span>
+      </div>
+      <div class="data-status-row" style="justify-content:center;margin-top:8px">
+        <span class="data-pill"><span class="dot dot-available"></span>Match Data</span>
+        <span class="data-pill"><span class="dot dot-available"></span>Klement Factors</span>
+        <span class="data-pill"><span class="dot dot-partial"></span>Player Rating</span>
+        <span class="data-pill"><span class="dot dot-available"></span>Squad Condition</span>
+        <span class="data-pill"><span class="dot dot-available"></span>Group Situation</span>
+        <span class="data-pill"><span class="dot dot-missing"></span>Confirmed Lineup</span>
+      </div>
+    </div>
+
+  </div><!-- end detail-content -->
+</div><!-- end detail-layout -->
+
+<footer class="footer">
+  <div class="disclaimer">⚠️ Prediksi ini adalah estimasi berbasis data, bukan jaminan hasil pertandingan. Lineup resmi biasanya baru tersedia menjelang kick-off.</div>
+  <div>WC2026 Prediction Engine · <a href="#">Metodologi</a> · <a href="#">Sumber Data</a></div>
+</footer>
+
+<script>
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+<script src="../js/api.js?v=20260628-data"></script>
+<script src="../js/app.js?v=20260628-data"></script>
+</body>
+</html>

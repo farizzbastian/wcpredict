@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perbandingan Tim — WC2026 Predict</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-page="comparison">
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="brand-icon">⚽</div>
+    <span>WC2026 <span style="color:var(--accent-blue)">Predict</span></span>
+  </div>
+  <div class="navbar-nav">
+    <a href="../index.html" class="nav-link">Dashboard</a>
+    <a href="matches.html" class="nav-link">Pertandingan</a>
+    <a href="detail.html" class="nav-link">Analisis</a>
+    <a href="comparison.html" class="nav-link active">Perbandingan</a>
+    <span class="badge badge-live" style="margin-left:8px">● Live</span>
+  </div>
+</nav>
+
+<div id="comparison-page-root" class="container" style="padding-top:40px;padding-bottom:48px">
+
+  <!-- Page Header -->
+  <div style="margin-bottom:32px">
+    <h1 style="font-size:1.6rem;font-weight:800;margin-bottom:6px">Perbandingan Tim</h1>
+    <p id="comp-subtitle" style="color:var(--text-secondary);font-size:0.9rem">Memuat perbandingan pertandingan...</p>
+  </div>
+
+  <!-- TEAM HEADER CARDS -->
+  <div class="comparison-team-grid" style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin-bottom:32px">
+    <div class="panel" style="padding:24px;text-align:center;border-color:rgba(77,143,255,0.4)">
+      <div id="comp-flag-a" style="font-size:3rem;margin-bottom:8px">-</div>
+      <div id="comp-name-a" style="font-size:1.4rem;font-weight:800;color:var(--team-a)">Tim A</div>
+      <div id="comp-rank-a" style="font-size:0.78rem;color:var(--text-muted);margin-top:4px">Memuat...</div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:1rem;font-weight:900;color:var(--text-muted);letter-spacing:0.1em">VS</div>
+    </div>
+    <div class="panel" style="padding:24px;text-align:center;border-color:rgba(124,92,252,0.4)">
+      <div id="comp-flag-b" style="font-size:3rem;margin-bottom:8px">-</div>
+      <div id="comp-name-b" style="font-size:1.4rem;font-weight:800;color:var(--team-b)">Tim B</div>
+      <div id="comp-rank-b" style="font-size:0.78rem;color:var(--text-muted);margin-top:4px">Memuat...</div>
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE: KLEMENT FACTORS -->
+  <div class="panel" style="margin-bottom:24px">
+    <div class="panel-header">
+      <div class="panel-title">📊 6 Faktor Klement — Perbandingan</div>
+    </div>
+    <div class="panel-body" style="padding:0">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th id="comp-klement-head-a" class="team-col-a" style="text-align:right">Tim A</th>
+            <th style="text-align:center">Faktor</th>
+            <th id="comp-klement-head-b" class="team-col-b">Tim B</th>
+            <th style="text-align:center">Winner</th>
+          </tr>
+        </thead>
+        <tbody id="comp-klement-body">
+          <tr>
+            <td class="val-a" style="text-align:right">$6,800</td>
+            <td class="metric-name" style="text-align:center">GDP per Capita</td>
+            <td class="val-b">$28,000</td>
+            <td style="text-align:center"><span class="badge badge-medium" style="background:rgba(124,92,252,0.12);color:var(--team-b)">Tim B +1</span></td>
+          </tr>
+          <tr>
+            <td class="val-a" style="text-align:right">51.5M · 8/10</td>
+            <td class="metric-name" style="text-align:center">Population + Culture</td>
+            <td class="val-b">10.3M · 9/10</td>
+            <td style="text-align:center"><span class="badge badge-medium" style="background:rgba(77,143,255,0.12);color:var(--team-a)">Tim A +1</span></td>
+          </tr>
+          <tr>
+            <td class="val-a" style="text-align:right">24°C (diff: 10)</td>
+            <td class="metric-name" style="text-align:center">Avg Temperature (ideal 14°C)</td>
+            <td class="val-b">16°C (diff: 2)</td>
+            <td style="text-align:center"><span class="badge badge-medium" style="background:rgba(124,92,252,0.12);color:var(--team-b)">Tim B +1</span></td>
+          </tr>
+          <tr>
+            <td class="val-a" style="text-align:right">#14</td>
+            <td class="metric-name" style="text-align:center">FIFA Ranking</td>
+            <td class="val-b">#6</td>
+            <td style="text-align:center"><span class="badge badge-medium" style="background:rgba(124,92,252,0.12);color:var(--team-b)">Tim B +1</span></td>
+          </tr>
+          <tr>
+            <td class="val-a" style="text-align:right">Away</td>
+            <td class="metric-name" style="text-align:center">Home Advantage</td>
+            <td class="val-b">Away</td>
+            <td style="text-align:center"><span class="badge badge-finished">Neutral</span></td>
+          </tr>
+          <tr>
+            <td class="val-a" style="text-align:right">W1-D1-L1 · 4 GF · 4 GA</td>
+            <td class="metric-name" style="text-align:center">WC 2026 Form</td>
+            <td class="val-b">W2-D1-L0 · 7 GF · 2 GA</td>
+            <td style="text-align:center"><span class="badge badge-medium" style="background:rgba(124,92,252,0.12);color:var(--team-b)">Tim B +1</span></td>
+          </tr>
+        </tbody>
+        <tfoot id="comp-klement-foot">
+          <tr style="background:var(--bg-secondary)">
+            <td style="text-align:right;font-size:1.2rem;font-weight:800;color:var(--team-a)">1</td>
+            <td style="text-align:center;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Total Score</td>
+            <td style="font-size:1.2rem;font-weight:800;color:var(--team-b)">4</td>
+            <td style="text-align:center"><span style="font-size:0.8rem;color:var(--text-muted)">/ 6 pts</span></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE: TOURNAMENT STATS -->
+  <div class="panel" style="margin-bottom:24px">
+    <div class="panel-header">
+      <div class="panel-title">📈 Statistik Turnamen</div>
+    </div>
+    <div class="panel-body" style="padding:0">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th id="comp-stats-head-a" class="team-col-a" style="text-align:right">Tim A</th>
+            <th style="text-align:center">Statistik</th>
+            <th id="comp-stats-head-b" class="team-col-b">Tim B</th>
+          </tr>
+        </thead>
+        <tbody id="comp-stats-body">
+          <tr>
+            <td style="text-align:right">
+              <div class="form-badges" style="justify-content:flex-end;display:flex">
+                <span class="form-badge form-w">W</span>
+                <span class="form-badge form-d">D</span>
+                <span class="form-badge form-l">L</span>
+              </div>
+            </td>
+            <td class="metric-name" style="text-align:center">Form</td>
+            <td>
+              <div class="form-badges">
+                <span class="form-badge form-w">W</span>
+                <span class="form-badge form-w">W</span>
+                <span class="form-badge form-d">D</span>
+              </div>
+            </td>
+          </tr>
+          <tr><td class="val-a" style="text-align:right">4</td><td class="metric-name" style="text-align:center">Gol Dicetak</td><td class="val-b">7</td></tr>
+          <tr><td class="val-a" style="text-align:right">4</td><td class="metric-name" style="text-align:center">Gol Kebobolan</td><td class="val-b">2</td></tr>
+          <tr><td class="val-a" style="text-align:right">4.2</td><td class="metric-name" style="text-align:center">xG</td><td class="val-b">6.1</td></tr>
+          <tr><td class="val-a" style="text-align:right">38</td><td class="metric-name" style="text-align:center">Total Shots</td><td class="val-b">45</td></tr>
+          <tr><td class="val-a" style="text-align:right">14</td><td class="metric-name" style="text-align:center">Shots on Target</td><td class="val-b">22</td></tr>
+          <tr><td class="val-a" style="text-align:right">51%</td><td class="metric-name" style="text-align:center">Possession</td><td class="val-b">57%</td></tr>
+          <tr><td class="val-a" style="text-align:right">5 🟨</td><td class="metric-name" style="text-align:center">Yellow Cards</td><td class="val-b">4 🟨</td></tr>
+          <tr><td class="val-a" style="text-align:right">0</td><td class="metric-name" style="text-align:center">Red Cards</td><td class="val-b">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COMPARISON: PLAYER RATING BARS -->
+  <div class="panel" style="margin-bottom:24px">
+    <div class="panel-header">
+      <div class="panel-title">⭐ Perbandingan Rating Pemain per Lini</div>
+    </div>
+    <div class="panel-body">
+      <div id="rating-compare-section">
+        <!-- Generated by JS below -->
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="text-align:center;margin-top:32px">
+    <a id="comparison-detail-link" href="detail.html" class="btn btn-primary" style="padding:14px 32px;font-size:1rem">
+      ⚡ Lihat Prediksi Lengkap
+    </a>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="disclaimer">⚠️ Prediksi adalah estimasi berbasis data, bukan jaminan hasil.</div>
+  <div>WC2026 Prediction Engine</div>
+</footer>
+
+<script src="../js/api.js?v=20260628-data"></script>
+<script src="../js/app.js?v=20260628-data"></script>
+</body>
+</html>
