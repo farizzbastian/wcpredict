@@ -90,6 +90,36 @@ function markStaleStandings(standings, cachedAt) {
   ]));
 }
 
+function mergeTeamSideFromCache(current, cached, side) {
+  const tlaKey = side === 'A' ? 'tlaA' : 'tlaB';
+  if (current[tlaKey] || !cached?.[tlaKey]) return current;
+
+  const fields = side === 'A'
+    ? ['teamA', 'flagA', 'tlaA', 'crestA', 'rankA']
+    : ['teamB', 'flagB', 'tlaB', 'crestB', 'rankB'];
+
+  return fields.reduce((merged, field) => ({
+    ...merged,
+    [field]: cached[field],
+  }), current);
+}
+
+function mergeWithRicherDiskMatches(matches) {
+  const stale = fromDiskCache('matches_all');
+  if (!stale?.data?.length) return matches;
+
+  const cachedById = new Map(stale.data.map((match) => [String(match.id), match]));
+  return matches.map((match) => {
+    const cached = cachedById.get(String(match.id));
+    if (!cached) return match;
+
+    let merged = mergeTeamSideFromCache(match, cached, 'A');
+    merged = mergeTeamSideFromCache(merged, cached, 'B');
+
+    return merged;
+  });
+}
+
 // ---- Core fetch ----
 function getApiKey() {
   const key = process.env.FOOTBALL_DATA_API_KEY;
@@ -264,7 +294,7 @@ async function getMatches(filters = {}) {
 
   try {
     const data = await apiGet(`/v4/competitions/${WC_CODE}/matches`);
-    const mapped = data.matches.map(mapMatch);
+    const mapped = mergeWithRicherDiskMatches(data.matches.map(mapMatch));
     toCache(cacheKey, mapped, CACHE_TTL.matches);
     toDiskCache(cacheKey, mapped);
     return applyFilters(mapped, filters);

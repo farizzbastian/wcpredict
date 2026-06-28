@@ -26,10 +26,9 @@ async function getPrediction(match) {
   // ---- Ambil standings & stats ----
   const standings = await fd.getStandings();
   const groupName = match.group;
-  const groupRows = groupName ? (standings[groupName] || []) : [];
 
-  const rowA = groupRows.find(r => r.tla === tlaA) || null;
-  const rowB = groupRows.find(r => r.tla === tlaB) || null;
+  const rowA = findStandingRow(standings, groupName, tlaA);
+  const rowB = findStandingRow(standings, groupName, tlaB);
 
   const statsA = rowA?.stats || null;
   const statsB = rowB?.stats || null;
@@ -99,6 +98,21 @@ async function getPrediction(match) {
     groupSituation,
     prediction,
   };
+}
+
+function findStandingRow(standings, groupName, tla) {
+  if (!tla) return null;
+
+  const directGroupRows = groupName ? (standings[groupName] || []) : [];
+  const direct = directGroupRows.find((row) => row.tla === tla);
+  if (direct) return direct;
+
+  for (const rows of Object.values(standings)) {
+    const found = rows.find((row) => row.tla === tla);
+    if (found) return found;
+  }
+
+  return null;
 }
 
 /**

@@ -61,6 +61,15 @@ function renderMatchCards(list, containerId) {
     const confidenceText = displayPercent(m.confidence);
     const isLive = m.status === 'live';
     const isFinished = m.status === 'finished';
+    const canPredict = Boolean(m.tlaA && m.tlaB);
+    const phaseText = [m.phase, m.group].filter(Boolean).join(' · ');
+    const rankA = m.tlaA ? `FIFA #${m.rankA}` : 'Menunggu tim';
+    const rankB = m.tlaB ? `FIFA #${m.rankB}` : 'Menunggu tim';
+    const metaItems = [
+      (m.date || m.time) ? `🕐 ${[m.date, m.time].filter(Boolean).join(' ')}` : null,
+      m.city ? `📍 ${m.city}` : null,
+      m.stadium ? `🏟️ ${m.stadium}` : null,
+    ].filter(Boolean);
     let centerContent = `<div class="vs-text">VS</div>`;
     if (isLive && m.liveScore) {
       centerContent = `
@@ -71,28 +80,26 @@ function renderMatchCards(list, containerId) {
       centerContent = `<div class="live-score" style="color:var(--text-secondary)">${m.liveScore.a} - ${m.liveScore.b}</div>`;
     }
     return `
-    <article class="match-card fade-up" onclick="location.href='${detailUrl(m.id)}'">
+    <article class="match-card fade-up ${canPredict ? '' : 'is-pending-team'}" ${canPredict ? `onclick="location.href='${detailUrl(m.id)}'"` : ''}>
       <div class="match-card-header">
-        <span class="match-phase">⚽ ${m.phase} · ${m.group}</span>
+        <span class="match-phase">⚽ ${phaseText || 'Fase belum tersedia'}</span>
         ${isLive ? '<span class="badge badge-live">Live</span>' : isFinished ? '<span class="badge badge-finished">Finished</span>' : '<span class="badge badge-upcoming">Upcoming</span>'}
       </div>
       <div class="match-teams">
         <div class="team-info team-a">
           <span class="team-flag">${m.flagA}</span>
           <div class="team-name">${m.teamA}</div>
-          <div class="team-rank">FIFA #${m.rankA}</div>
+          <div class="team-rank">${rankA}</div>
         </div>
         <div class="vs-divider">${centerContent}</div>
         <div class="team-info team-b">
           <span class="team-flag">${m.flagB}</span>
           <div class="team-name">${m.teamB}</div>
-          <div class="team-rank">FIFA #${m.rankB}</div>
+          <div class="team-rank">${rankB}</div>
         </div>
       </div>
       <div class="match-meta">
-        <span>🕐 ${m.time}</span>
-        <span>📍 ${m.city}</span>
-        <span>🏟️ ${m.stadium}</span>
+        ${metaItems.map((item) => `<span>${item}</span>`).join('') || '<span>Jadwal belum tersedia</span>'}
       </div>
       <div class="match-card-footer">
         <div class="confidence-mini">
@@ -100,7 +107,7 @@ function renderMatchCards(list, containerId) {
           <span>${confidenceText}</span>
           <span class="badge ${cl.badge}">${cl.text}</span>
         </div>
-        <button class="btn btn-primary btn-sm">Lihat Prediksi →</button>
+        <button class="btn btn-primary btn-sm" ${canPredict ? '' : 'disabled'}>${canPredict ? 'Lihat Prediksi →' : 'Menunggu Tim'}</button>
       </div>
     </article>`;
   }).join('');
@@ -578,6 +585,7 @@ function showOfflineBanner() {
    =================================================================== */
 let _allMatches = [];
 let _currentFilter = 'all';
+let _currentPhase = 'all';
 let _currentSearch = '';
 
 async function loadMatches() {
@@ -622,6 +630,9 @@ function applyMatchFilters() {
   let filtered = [..._allMatches];
   if (_currentFilter !== 'all') {
     filtered = filtered.filter(m => m.status === _currentFilter);
+  }
+  if (_currentPhase !== 'all') {
+    filtered = filtered.filter(m => m.phase === _currentPhase);
   }
   if (_currentSearch) {
     const q = _currentSearch.toLowerCase();
@@ -916,6 +927,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         _currentFilter = btn.dataset.filter;
+        applyMatchFilters();
+      });
+    });
+
+    document.querySelectorAll('[data-phase]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-phase]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        _currentPhase = btn.dataset.phase;
         applyMatchFilters();
       });
     });
