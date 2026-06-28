@@ -5,7 +5,8 @@ const { calculateKlementFactors }  = require('../engine/klementEngine');
 const { calculateTeamRating, compareRatings } = require('../engine/playerRatingEngine');
 const { calculateTournamentScore } = require('../engine/tournamentStatsEngine');
 const { analyzeGroupSituation }    = require('../engine/groupSituationEngine');
-const { runPrediction }            = require('../engine/predictionEngine');
+const { calculateMatchPrediction } = require('../engine/klementScoring');
+const { applyManualPredictionOverrides } = require('./manualDataService');
 
 /**
  * Jalankan prediksi lengkap untuk satu match.
@@ -47,13 +48,29 @@ async function getPrediction(match) {
     match.teamA, match.teamB, rowA, rowB, match.status
   );
 
-  // ---- Prediksi final ----
-  const prediction = runPrediction({
-    teamA, teamB,
-    klementResult, tournamentResult,
-    ratingResultA, ratingResultB, ratingScore,
-    groupSituation,
+  // ---- Prediksi final: format baru 100 poin berdasarkan 6 Faktor Klement lengkap ----
+  const scoringInput = buildScoringInput({
+    match,
+    teamA,
+    teamB,
+    statsA,
+    statsB,
+    ratingResultA,
+    ratingResultB,
   });
+  const scoringInputWithManual = applyManualPredictionOverrides({
+    match: scoringInput.match,
+    teamAData: scoringInput.teamAData,
+    teamBData: scoringInput.teamBData,
+    tlaA,
+    tlaB,
+  });
+  const fullPrediction = calculateMatchPrediction(scoringInputWithManual);
+  const prediction = adaptFullPredictionForApi(fullPrediction, teamA, teamB);
+  const disciplineRow = fullPrediction.breakdown.find((row) => row.id === 'disciplineAvailability') || {};
+  const injuryRow = fullPrediction.breakdown.find((row) => row.id === 'injuryAvailability') || {};
+  const squadScoreA = Number(((disciplineRow.teamAScore || 0) + (injuryRow.teamAScore || 0)).toFixed(1));
+  const squadScoreB = Number(((disciplineRow.teamBScore || 0) + (injuryRow.teamBScore || 0)).toFixed(1));
 
   return {
     match: {
@@ -66,10 +83,10 @@ async function getPrediction(match) {
       status: match.status, liveScore: match.liveScore,
     },
     klementFactors: {
-      scoreA: klementResult.scoreA,
-      scoreB: klementResult.scoreB,
-      maxScore: klementResult.maxScore,
-      factors: klementResult.factors,
+      scoreA: fullPrediction.totalScore.teamA,
+      scoreB: fullPrediction.totalScore.teamB,
+      maxScore: fullPrediction.maxTotal,
+      factors: fullPrediction.breakdown.map((row) => adaptBreakdownRowToFactor(row, teamA.name, teamB.name)),
     },
     tournamentStats: {
       scoreA: tournamentResult.scoreA,
@@ -91,9 +108,9 @@ async function getPrediction(match) {
     squadCondition: {
       teamA: { conditions: ratingResultA.conditions, totalAdjustment: ratingResultA.totalAdjustment },
       teamB: { conditions: ratingResultB.conditions, totalAdjustment: ratingResultB.totalAdjustment },
-      scoreA: prediction.breakdown.squad.scoreA,
-      scoreB: prediction.breakdown.squad.scoreB,
-      maxScore: prediction.breakdown.squad.max,
+      scoreA: squadScoreA,
+      scoreB: squadScoreB,
+      maxScore: 10,
     },
     groupSituation,
     prediction,
@@ -113,6 +130,151 @@ function findStandingRow(standings, groupName, tla) {
   }
 
   return null;
+}
+
+function buildScoringInput({ match, teamA, teamB, statsA, statsB, ratingResultA, ratingResultB }) {
+  return {
+    match: {
+      id: match.id,
+      teamA: teamA.name,
+      teamB: teamB.name,
+      tournament: 'World Cup 2026',
+      stage: match.phase,
+      matchDate: match.date,
+      venue: match.stadium,
+      venueCountry: match.venueCountry || null,
+      hostCountries: ['United States', 'Mexico', 'Canada'],
+    },
+    teamAData: buildTeamScoringData(teamA, statsA, ratingResultA),
+    teamBData: buildTeamScoringData(teamB, statsB, ratingResultB),
+  };
+}
+
+function buildTeamScoringData(team, stats, rating) {
+  return {
+    country: team.name,
+    fifaRank: team.fifaRank ?? null,
+    gdpPerCapita: team.gdpPerCapita ?? null,
+    population: team.population ?? null,
+    footballCultureScore: team.footballCultureScore ?? null,
+    averageTemperature: team.avgTemperature ?? team.averageTemperature ?? null,
+    isHost: Boolean(team.isHost),
+    tournamentStats: {
+      matchesPlayed: stats?.matchesPlayed ?? null,
+      wins: stats?.wins ?? null,
+      draws: stats?.draws ?? null,
+      losses: stats?.losses ?? null,
+      goalsFor: stats?.goalsFor ?? null,
+      goalsAgainst: stats?.goalsAgainst ?? null,
+      goalDifference: stats?.goalDiff ?? stats?.goalDifference ?? null,
+      xG: stats?.xg ?? null,
+      shots: stats?.shots ?? null,
+      shotsOnTarget: stats?.shotsOnTarget ?? null,
+      possession: stats?.possessionAvg ?? stats?.possession ?? null,
+      cleanSheets: stats?.cleanSheets ?? null,
+      yellowCards: stats?.yellowCards ?? 0,
+      redCards: stats?.redCards ?? 0,
+      accumulatedCardRisk: stats?.accumulatedCardRisk ?? 0,
+    },
+    squadStatus: deriveSquadStatusFromRating(rating),
+    playerRatings: {
+      averageRating: rating?.adjustedOverall ?? null,
+      keyPlayers: rating?.raw?.keyPlayers != null ? [{ rating: rating.raw.keyPlayers, importance: 'key' }] : [],
+    },
+    mentalProfile: {
+      knockoutExperience: null,
+      comebackRecord: null,
+      lateGoals: null,
+      penaltyRecord: null,
+      seniorLeadership: null,
+      responseAfterConceding: null,
+      tournamentHistory: null,
+      recentMomentum: null,
+    },
+  };
+}
+
+function deriveSquadStatusFromRating(rating) {
+  const status = {
+    injuredPlayers: [],
+    doubtfulPlayers: [],
+    suspendedPlayers: [],
+    unavailablePlayers: [],
+  };
+
+  (rating?.conditions || []).forEach((condition) => {
+    const player = {
+      name: condition.text,
+      importance: condition.isKeyPlayer ? 'key' : 'rotation',
+    };
+    if (condition.type === 'suspension') status.suspendedPlayers.push(player);
+    if (condition.type === 'injury') status.injuredPlayers.push(player);
+  });
+
+  return status;
+}
+
+function adaptFullPredictionForApi(fullPrediction, teamA, teamB) {
+  const winnerName = fullPrediction.prediction.winner;
+  const winner = winnerName === teamA.name ? teamA : winnerName === teamB.name ? teamB : null;
+  const scoreDifference = Math.abs(fullPrediction.totalScore.teamA - fullPrediction.totalScore.teamB);
+  const dataCompleteness = Math.round(
+    ((fullPrediction.breakdown.length - fullPrediction.dataQuality.unavailableFactors.length) / fullPrediction.breakdown.length) * 100
+  );
+  const risk = fullPrediction.prediction.status === 'Strong favorite'
+    ? 'Low'
+    : fullPrediction.prediction.status === 'Slight favorite'
+      ? 'Medium'
+      : 'High';
+
+  return {
+    totalA: fullPrediction.totalScore.teamA,
+    totalB: fullPrediction.totalScore.teamB,
+    maxTotal: fullPrediction.maxTotal,
+    winner,
+    winnerName,
+    resultType: fullPrediction.prediction.isCloseMatch ? 'close_match' : winner ? 'win' : 'draw',
+    resultLabel: winner
+      ? `${winner.name} ${scoreDifference <= 7 ? 'Menang Tipis' : 'Menang'}`
+      : 'Pertandingan Seimbang',
+    predictedScore: fullPrediction.prediction.predictedScore,
+    confidence: fullPrediction.prediction.confidence,
+    completeness: dataCompleteness,
+    risk,
+    status: fullPrediction.prediction.status,
+    isCloseMatch: fullPrediction.prediction.isCloseMatch,
+    extraTimeRisk: fullPrediction.prediction.extraTimeRisk,
+    penaltyRisk: fullPrediction.prediction.penaltyRisk,
+    dataStatus: fullPrediction.dataQuality.unavailableFactors.length ? 'partial' : 'complete',
+    predictionReady: true,
+    formulaVersion: 'klement-100-v1',
+    reasons: fullPrediction.keyReasons,
+    riskNotes: fullPrediction.riskNotes,
+    breakdown: fullPrediction.breakdown,
+    dataQuality: fullPrediction.dataQuality,
+    full: fullPrediction,
+    lastUpdated: fullPrediction.dataQuality.lastUpdated,
+  };
+}
+
+function adaptBreakdownRowToFactor(row, teamAName, teamBName) {
+  return {
+    id: row.id,
+    name: row.factor,
+    icon: '',
+    dataStatus: row.dataStatus,
+    missing: row.dataStatus === 'missing',
+    winnerA: row.winner === teamAName,
+    winnerB: row.winner === teamBName,
+    neutral: row.winner === 'Neutral',
+    scoreA: row.teamAScore,
+    scoreB: row.teamBScore,
+    maxScore: row.maxScore,
+    valA: `${row.teamAScore}/${row.maxScore}`,
+    valB: `${row.teamBScore}/${row.maxScore}`,
+    unit: 'poin',
+    detail: row.explanation,
+  };
 }
 
 /**

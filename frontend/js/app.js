@@ -192,18 +192,19 @@ function renderDetailPage(data) {
 function renderKlementFactors(data) {
   const el = document.getElementById('klement-section');
   if (!el) return;
+  const maxScore = data.klementScore.max || 100;
   const scoreRow = `
     <div class="score-total-grid" style="margin-bottom:20px">
       <div class="score-total-team a"><div class="score-total-label">${data.teamA.name}</div>
-        <div class="score-total-value">${data.klementScore.a}</div><div class="score-total-sub">/ 6 pts</div></div>
+        <div class="score-total-value">${data.klementScore.a}</div><div class="score-total-sub">/ ${maxScore} pts</div></div>
       <div class="score-divider">•</div>
       <div class="score-total-team b"><div class="score-total-label">${data.teamB.name}</div>
-        <div class="score-total-value">${data.klementScore.b}</div><div class="score-total-sub">/ 6 pts</div></div>
+        <div class="score-total-value">${data.klementScore.b}</div><div class="score-total-sub">/ ${maxScore} pts</div></div>
     </div>`;
   const cards = data.klementFactors.map((f, i) => {
     const wClass = f.winnerB ? 'winner-b' : f.winnerA ? 'winner-a' : f.missing ? 'missing' : 'neutral';
-    const ptsA = f.winnerA ? '<span class="klement-pts won">+1</span>' : '<span class="klement-pts lost">+0</span>';
-    const ptsB = f.winnerB ? '<span class="klement-pts won">+1</span>' : '<span class="klement-pts lost">+0</span>';
+    const ptsA = `<span class="klement-pts ${f.scoreA > f.scoreB ? 'won' : 'lost'}">${f.scoreA ?? 0}</span>`;
+    const ptsB = `<span class="klement-pts ${f.scoreB > f.scoreA ? 'won' : 'lost'}">${f.scoreB ?? 0}</span>`;
     const arrow = f.winnerA ? '←' : f.winnerB ? '→' : '=';
     return `
     <div class="klement-card ${wClass} delay-${(i%3)+1}" onclick="this.classList.toggle('expanded')">
@@ -421,6 +422,11 @@ function renderFinalPrediction(data) {
       <div class="reason-bullet"></div>
       <span>${r}</span>
     </div>`).join('');
+  const riskNotes = (p.riskNotes || []).map(r => `
+    <div class="reason-item">
+      <div class="reason-bullet" style="background:var(--accent-yellow)"></div>
+      <span>${r}</span>
+    </div>`).join('');
 
   const riskColor = p.risk === 'Low' ? 'var(--accent-green)' : p.risk === 'Medium' ? 'var(--accent-yellow)' : 'var(--accent-red)';
 
@@ -468,8 +474,8 @@ function renderFinalPrediction(data) {
 
       <div class="prediction-meta-grid">
         <div class="pred-meta-item">
-          <div class="pred-meta-label">Match Type</div>
-          <div class="pred-meta-value">${p.matchType}</div>
+          <div class="pred-meta-label">Status</div>
+          <div class="pred-meta-value">${p.status || p.matchType}</div>
         </div>
         <div class="pred-meta-item">
           <div class="pred-meta-label">Prediction Risk</div>
@@ -495,11 +501,12 @@ function renderFinalPrediction(data) {
 
       <div class="prediction-reasons">
         <div class="reasons-title">📌 Mengapa prediksi ini muncul?</div>
-        ${reasons}
+        ${reasons || '<div class="reason-item"><div class="reason-bullet"></div><span>Belum ada faktor dominan karena data masih terbatas.</span></div>'}
+        ${riskNotes ? `<div class="reasons-title" style="margin-top:14px">Risiko prediksi</div>${riskNotes}` : ''}
       </div>
 
       <div class="data-warning">
-        ⚠️ <span>Prediksi ini adalah estimasi berbasis data, bukan jaminan hasil. Data status: <strong>${p.dataStatus}</strong>. Terakhir diperbarui: ${p.lastUpdate}</span>
+        <span>Beberapa data belum tersedia / belum final. Prediksi dapat berubah jika ada update cedera, suspensi, lineup, atau statistik resmi terbaru. Data status: <strong>${p.dataStatus}</strong>.</span>
       </div>
     </div>`;
 }
@@ -508,16 +515,19 @@ function renderFinalPrediction(data) {
 function renderScoreBreakdown(data) {
   const el = document.getElementById('score-breakdown');
   if (!el) return;
-  const rows = [
-    { label: '6 Faktor Klement', a: data.klementScore.a, b: data.klementScore.b, max: 6 },
-    { label: 'Statistik Turnamen', a: data.statsScore.a, b: data.statsScore.b, max: 3 },
-    { label: 'Rating Pemain', a: data.ratingScore.a, b: data.ratingScore.b, max: 3 },
-    { label: 'Kondisi Skuad', a: data.squadScore.a, b: data.squadScore.b, max: 2 },
-    { label: 'Situasi Grup', a: data.groupScore.a, b: data.groupScore.b, max: 1 }
-  ];
+  const rows = (data.breakdown || []).map(row => ({
+    label: row.factor,
+    a: row.teamAScore,
+    b: row.teamBScore,
+    max: row.maxScore,
+    winner: row.winner,
+    explanation: row.explanation,
+    missing: row.dataStatus === 'missing',
+  }));
   el.innerHTML = rows.map(r => {
     const pctA = (r.a / r.max) * 100;
     const pctB = (r.b / r.max) * 100;
+    const winnerText = r.missing ? 'Data missing' : r.winner;
     return `
     <div class="stats-row">
       <div style="text-align:right">
@@ -526,7 +536,7 @@ function renderScoreBreakdown(data) {
           <div class="stat-bar-a" style="width:${pctA}%"></div>
         </div>
       </div>
-      <div class="stat-label" style="font-size:0.72rem">${r.label}<br><span style="color:var(--text-muted)">(max ${r.max})</span></div>
+      <div class="stat-label" style="font-size:0.72rem">${r.label}<br><span style="color:var(--text-muted)">(max ${r.max})</span><br><span style="color:var(--text-secondary)">${winnerText}</span><br><span style="color:var(--text-muted);font-weight:500;text-transform:none;letter-spacing:0">${r.explanation}</span></div>
       <div>
         <span class="stat-val-b">${r.b}</span>
         <div class="stat-bar-wrap" style="margin-top:4px">
@@ -843,7 +853,7 @@ function renderComparisonKlement(adapted) {
       <td style="text-align:right;font-size:1.2rem;font-weight:800;color:var(--team-a)">${adapted.klementScore.a}</td>
       <td style="text-align:center;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Total Score</td>
       <td style="font-size:1.2rem;font-weight:800;color:var(--team-b)">${adapted.klementScore.b}</td>
-      <td style="text-align:center"><span style="font-size:0.8rem;color:var(--text-muted)">/ 6 pts</span></td>
+      <td style="text-align:center"><span style="font-size:0.8rem;color:var(--text-muted)">/ ${adapted.klementScore.max || 100} pts</span></td>
     </tr>`;
 }
 

@@ -132,7 +132,7 @@ function adaptPredictionResponse(apiData) {
 
     // Klement
     klementFactors: klementFactors.factors,
-    klementScore:   { a: klementFactors.scoreA, b: klementFactors.scoreB },
+    klementScore:   { a: klementFactors.scoreA, b: klementFactors.scoreB, max: klementFactors.maxScore },
 
     // Stats turnamen
     tournamentStats: {
@@ -173,14 +173,20 @@ function adaptPredictionResponse(apiData) {
       confidence:   prediction.confidence,
       completeness: prediction.completeness,
       risk:         prediction.risk,
+      status:       prediction.status,
+      isCloseMatch: prediction.isCloseMatch,
+      extraTimeRisk: prediction.extraTimeRisk,
+      penaltyRisk:  prediction.penaltyRisk,
       matchType:    capitalizeFirst(prediction.resultType?.replace('_', ' ') ?? ''),
       dataStatus:   prediction.dataStatus,
       lastUpdate:   prediction.lastUpdated,
       reasons:      prediction.reasons ?? [],
+      riskNotes:    prediction.riskNotes ?? [],
+      dataQuality:   prediction.dataQuality ?? null,
     },
 
     // Breakdown
-    breakdown: prediction.breakdown,
+    breakdown: Array.isArray(prediction.breakdown) ? prediction.breakdown : [],
   };
 }
 

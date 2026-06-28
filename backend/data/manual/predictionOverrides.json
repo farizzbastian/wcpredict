@@ -1,0 +1,69 @@
+{
+  "_instructions": [
+    "Isi manual hanya jika data tidak tersedia dari API atau perlu koreksi data resmi.",
+    "Setiap section wajib punya _sources berisi minimal label atau url. Tanpa _sources, section diabaikan oleh sistem.",
+    "Jangan isi angka berdasarkan feeling. Pakai data dari sumber jelas seperti FIFA, provider statistik, laporan cedera resmi, konfederasi, federasi, klub, atau media kredibel.",
+    "Untuk field scalar, pakai format { \"value\": ..., \"_sources\": [...] }."
+  ],
+  "teams": {
+    "EXAMPLE_TLA": {
+      "squadStatus": {
+        "injuredPlayers": [
+          {
+            "name": "Nama Pemain",
+            "importance": "key"
+          }
+        ],
+        "doubtfulPlayers": [],
+        "suspendedPlayers": [],
+        "unavailablePlayers": [],
+        "_sources": [
+          {
+            "label": "Contoh sumber cedera resmi",
+            "url": "https://example.com/source",
+            "lastChecked": "YYYY-MM-DD"
+          }
+        ]
+      },
+      "mentalProfile": {
+        "knockoutExperience": 4,
+        "comebackRecord": 3,
+        "lateGoals": 2,
+        "penaltyRecord": 3,
+        "seniorLeadership": 4,
+        "recentMomentum": 3,
+        "_sources": [
+          {
+            "label": "Contoh basis data historis pertandingan",
+            "url": "https://example.com/source",
+            "lastChecked": "YYYY-MM-DD"
+          }
+        ]
+      },
+      "fifaRank": {
+        "value": 10,
+        "_sources": [
+          {
+            "label": "FIFA rankings",
+            "url": "https://www.fifa.com/fifa-world-ranking/men",
+            "lastChecked": "YYYY-MM-DD"
+          }
+        ]
+      }
+    }
+  },
+  "matches": {
+    "EXAMPLE_MATCH_ID": {
+      "venueCountry": {
+        "value": "Canada",
+        "_sources": [
+          {
+            "label": "Official match schedule",
+            "url": "https://example.com/source",
+            "lastChecked": "YYYY-MM-DD"
+          }
+        ]
+      }
+    }
+  }
+}
