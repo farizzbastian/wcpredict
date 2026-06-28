@@ -72,9 +72,10 @@ function renderMatchCards(list, containerId) {
     ].filter(Boolean);
     let centerContent = `<div class="vs-text">VS</div>`;
     if (isLive && m.liveScore) {
+      const minuteText = m.liveScore.minute ? `${m.liveScore.minute}'` : 'Live';
       centerContent = `
         <div class="live-score">${m.liveScore.a} - ${m.liveScore.b}</div>
-        <div class="score-time">${m.liveScore.minute}'</div>
+        <div class="score-time">${minuteText}</div>
       `;
     } else if (isFinished && m.liveScore) {
       centerContent = `<div class="live-score" style="color:var(--text-secondary)">${m.liveScore.a} - ${m.liveScore.b}</div>`;

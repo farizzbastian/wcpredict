@@ -336,6 +336,36 @@ async function getMatchById(id) {
   return mapped;
 }
 
+/** Override live score sementara saat provider belum update */
+async function updateLiveScore(id, scoreA, scoreB, minute) {
+  const normalizedId = String(id);
+  const liveScore = {
+    a: Number(scoreA),
+    b: Number(scoreB),
+    minute: Number(minute),
+  };
+
+  const matches = await getMatches();
+  const existing = matches.find((match) => match.id === normalizedId);
+  const updated = {
+    ...(existing || { id: normalizedId }),
+    id: normalizedId,
+    liveScore,
+    status: 'live',
+    rawStatus: 'MANUAL_LIVE',
+  };
+
+  if (existing) {
+    const updatedMatches = matches.map((match) => (
+      match.id === normalizedId ? updated : match
+    ));
+    toCache('matches_all', updatedMatches, CACHE_TTL.matches);
+  }
+  toCache(`match_${normalizedId}`, updated, CACHE_TTL.match);
+
+  return updated;
+}
+
 /** Ambil standings semua grup */
 async function getStandings() {
   const cacheKey = 'standings';
@@ -502,6 +532,7 @@ async function getTeamTournamentStats(teamName) {
 function mapMatch(m) {
   const statusMap = {
     FINISHED: 'finished',
+    LIVE:     'live',
     IN_PLAY:  'live',
     PAUSED:   'live',
     TIMED:    'upcoming',
@@ -514,7 +545,7 @@ function mapMatch(m) {
   const score = m.score   || {};
   const ft    = score.fullTime || {};
 
-  const isLive    = ['IN_PLAY','PAUSED'].includes(m.status);
+  const isLive    = ['LIVE','IN_PLAY','PAUSED'].includes(m.status);
   const isFinished = m.status === 'FINISHED';
 
   let liveScore = null;
@@ -625,4 +656,5 @@ function applyFilters(list, { status, phase, group } = {}) {
 module.exports = {
   getMatches, getMatchById, getStandings,
   getGroupStanding, getTeamData, getTeamTournamentStats,
+  updateLiveScore,
 };

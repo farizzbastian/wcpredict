@@ -12,10 +12,9 @@ async function getMatchById(id) {
   return fd.getMatchById(id);
 }
 
-/** Update live score — hanya in-memory cache override */
-function updateLiveScore(id, scoreA, scoreB, minute) {
-  // Tidak menulis ke file — hanya informasi manual saat API tidak update
-  return { id, liveScore: { a: scoreA, b: scoreB, minute }, status: 'live' };
+/** Update live score manual di cache runtime */
+async function updateLiveScore(id, scoreA, scoreB, minute) {
+  return fd.updateLiveScore(id, scoreA, scoreB, minute);
 }
 
 module.exports = { getAllMatches, getMatchById, updateLiveScore };

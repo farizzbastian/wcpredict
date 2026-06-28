@@ -46,9 +46,11 @@ router.patch('/:id/live-score',
   body('scoreB').isInt({ min:0 }),
   body('minute').isInt({ min:1, max:120 }),
   validate,
-  (req, res) => {
-    const updated = matchService.updateLiveScore(req.params.id, req.body.scoreA, req.body.scoreB, req.body.minute);
-    res.json({ success:true, message:'Live score diperbarui.', data:updated });
+  async (req, res, next) => {
+    try {
+      const updated = await matchService.updateLiveScore(req.params.id, req.body.scoreA, req.body.scoreB, req.body.minute);
+      res.json({ success:true, message:'Live score diperbarui.', data:updated });
+    } catch (err) { next(err); }
   }
 );
 
